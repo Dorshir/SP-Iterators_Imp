@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include "MagicalContainer.hpp"
 
+
 bool MagicalContainer::isPrime(int number) {
     if (number < 2) {
         return false;
@@ -39,6 +40,7 @@ MagicalContainer::~MagicalContainer() {
     for (int *element: primeElements) {
         delete element;
     }
+    
 }
 
 // Copy constructor
@@ -96,30 +98,41 @@ void MagicalContainer::addElement(int element) {
     elements.push_back(element);
     std::sort(elements.begin(), elements.end());
 
-    int *newElement = new int(element);
-    if (isPrime(element)) primeElements.push_back(newElement);
-    std::sort(primeElements.begin(), primeElements.end(), [](const int *a, const int *b) {
-        return (*a) < (*b);
-    });
-    sideCrossElements.push_back(newElement);
+    if (isPrime(element)) {
+        primeElements.emplace_back(new int(element));
+        std::sort(primeElements.begin(), primeElements.end(), [](const int *a, const int *b) {
+            return (*a) < (*b);
+        });
+    }
+    sideCrossElements.emplace_back(&element);
     sortSideCrossElements();
 }
 
 void MagicalContainer::removeElement(int element) {
+    if (isPrime(element)) {
+        auto it1 = std::find(primeElements.begin(), primeElements.end(), &element);
+        if (it1 != primeElements.end()) {
+            delete *it1;
+            primeElements.erase(it1);
+        }
+    }
 
-//    if(isPrime(element)) primeElements.erase(std::remove(primeElements.begin(), primeElements.end(), &element), primeElements.end());
-//    sideCrossElements.erase(std::remove(sideCrossElements.begin(), sideCrossElements.end(), &element), sideCrossElements.end());
-//    sortSideCrossElements();
+    auto it2 = std::find(sideCrossElements.begin(), sideCrossElements.end(), &element);
+    if (it2 != sideCrossElements.end()) {
+        delete *it2;
+        sideCrossElements.erase(it2);
+        sortSideCrossElements();
+    }
 
-    auto it = std::find(elements.begin(), elements.end(), element);
-    if (it != elements.end()) {
-        elements.erase(it);
+    auto it3 = std::find(elements.begin(), elements.end(), element);
+    if (it3 != elements.end()) {
+        elements.erase(it3);
         std::sort(elements.begin(), elements.end());
     } else {
         throw std::runtime_error("Element not found in the container.");
     }
-
 }
+
 
 size_t MagicalContainer::size() const {
     return elements.size();
@@ -134,9 +147,6 @@ MagicalContainer::AscendingIterator::AscendingIterator(const MagicalContainer &c
 // Copy constructor
 MagicalContainer::AscendingIterator::AscendingIterator(const AscendingIterator &other)
         : container(other.container), currentIndex(other.currentIndex) {}
-
-// Destructor
-MagicalContainer::AscendingIterator::~AscendingIterator() = default;
 
 // Assignment operator
 MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::operator=(const AscendingIterator &other) {
@@ -203,9 +213,6 @@ MagicalContainer::SideCrossIterator::SideCrossIterator(const MagicalContainer &c
 MagicalContainer::SideCrossIterator::SideCrossIterator(const SideCrossIterator &other)
         : container(other.container), currentIndex(other.currentIndex) {}
 
-// Destructor
-MagicalContainer::SideCrossIterator::~SideCrossIterator() = default;
-
 // Assignment operator
 MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operator=(const SideCrossIterator &other) {
     if (this != &other) {
@@ -270,9 +277,6 @@ MagicalContainer::PrimeIterator::PrimeIterator(const MagicalContainer &cont)
 // Copy constructor
 MagicalContainer::PrimeIterator::PrimeIterator(const PrimeIterator &other)
         : container(other.container), currentIndex(other.currentIndex) {}
-
-// Destructor
-MagicalContainer::PrimeIterator::~PrimeIterator() = default;
 
 MagicalContainer::PrimeIterator MagicalContainer::PrimeIterator::begin() const {
     return {container};

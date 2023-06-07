@@ -41,7 +41,7 @@ private:
 public:
     AscendingIterator(const MagicalContainer& cont);
     AscendingIterator(const AscendingIterator& other);
-    ~AscendingIterator();
+    ~AscendingIterator() = default;
     [[nodiscard]] AscendingIterator begin() const;
     [[nodiscard]] AscendingIterator end() const;
 
@@ -63,7 +63,7 @@ private:
 public:
     SideCrossIterator(const MagicalContainer& cont);
     SideCrossIterator(const SideCrossIterator& other);
-    ~SideCrossIterator();
+    ~SideCrossIterator() = default;
 
     SideCrossIterator& operator=(const SideCrossIterator& other);
 
@@ -89,7 +89,7 @@ private:
 public:
     PrimeIterator(const MagicalContainer& cont);
     PrimeIterator(const PrimeIterator& other);
-    ~PrimeIterator();
+    ~PrimeIterator() = default;
 
     PrimeIterator& operator=(const PrimeIterator& other);
 
